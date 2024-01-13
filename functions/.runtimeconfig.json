@@ -1,0 +1,5 @@
+{
+  "mongodb": {
+    "uri": "mongodb+srv://kadenisrice:ForPersonalProjects1234@personal.ugg5e4f.mongodb.net/carbonSense_db?retryWrites=true&w=majority"
+  }
+}
