@@ -22,6 +22,25 @@ accountRouter.get("/accounts", async (req, res) => {
   }
 });
 
+// get account by id:
+accountRouter.get("/accounts/:uid", async (req, res) => {
+  try {
+    const uid: string = req.params.uid;
+    const client = await getClient();
+    const account = await client
+      .db()
+      .collection<Account>("accounts")
+      .findOne({ uid });
+    if (account) {
+      res.status(200).json(account);
+    } else {
+      res.status(404).json({ message: "Account Does Not Exist" });
+    }
+  } catch (err) {
+    errorResponse(err, res);
+  }
+});
+
 // Create new account (POST)
 accountRouter.post("/accounts", async (req, res) => {
   try {
