@@ -2,6 +2,7 @@ import express from "express";
 import { getClient } from "../db";
 
 import Account from "../models/Account";
+import { ObjectId } from "mongodb";
 
 const accountRouter = express.Router();
 
@@ -48,6 +49,28 @@ accountRouter.post("/accounts", async (req, res) => {
     const client = await getClient();
     await client.db().collection<Account>("accounts").insertOne(account);
     res.status(201).json(account);
+  } catch (err) {
+    errorResponse(err, res);
+  }
+});
+
+// replace / update Account by ID:
+accountRouter.put("/accounts/:id", async (req, res) => {
+  try {
+    const _id: ObjectId = new ObjectId(req.params.id);
+    const updatedAccount: Account = req.body;
+    delete updatedAccount._id; // remove _id from body so we only have one.
+    const client = await getClient();
+    const result = await client
+      .db()
+      .collection<Account>("accounts")
+      .replaceOne({ _id }, updatedAccount);
+    if (result.modifiedCount) {
+      updatedAccount._id = _id;
+      res.status(200).json(updatedAccount);
+    } else {
+      res.status(404).json({ message: "Not Found" });
+    }
   } catch (err) {
     errorResponse(err, res);
   }
